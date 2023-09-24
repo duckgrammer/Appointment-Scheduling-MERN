@@ -6,7 +6,7 @@ const createDoctor = async (req, res) => {
   const doctor = new Doctor({
     name: req.body.name,
     availableTimes: [],
-    bookedTimes: [],
+    bookings: [],
   });
 
   try {
@@ -70,7 +70,7 @@ const bookTime = async (req, res) => {
     const filter = { _id: new mongoose.Types.ObjectId(req.params.doctorId) };
     const targetDoctor = await Doctor.findOneAndUpdate(filter, {
       $pull: { availableTimes: req.body.time },
-      $addToSet: { bookedTimes: req.body.time },
+      $addToSet: { bookings: req.body.bookingId },
     });
     res.send(targetDoctor);
   } catch (error) {
@@ -83,7 +83,7 @@ const unbookTime = async (req, res) => {
   try {
     const filter = { _id: new mongoose.Types.ObjectId(req.params.doctorId) };
     const targetDoctor = await Doctor.findOneAndUpdate(filter, {
-      $pull: { bookedTimes: req.body.time },
+      $pull: { bookings: req.body.bookingId },
       $addToSet: { availableTimes: req.body.time },
     });
     res.send(targetDoctor);

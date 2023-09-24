@@ -27,6 +27,7 @@ database.once("connected", () => {
 app.use(cors()); // Allow cross-origin requests (for frontend to communicate with backend on different ports/address)
 app.use(express.json()); // Parses incoming JSON requests and uts the parsed data in req
 app.use(express.urlencoded({ extended: true })); // Parses incoming requests with urlenconded payloads
+//app.use('/', VerifyToken, require('./firebase-express-auth/dataRoute'));
 
 /**
  * Uses the VerifyToken middleware to protect the data route
@@ -37,6 +38,8 @@ dataRoute.get("/", (req, res) => {
 });
 
 app.use("/doctor", require("./routes/doctor.router.js"));
+app.use("/patient", require("./routes/patient.router.js"));
+app.use("/booking", require("./routes/booking.router.js"));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

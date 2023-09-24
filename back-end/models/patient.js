@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
-const doctorSchema = new mongoose.Schema({
-  name: {
+const patientSchema = new mongoose.Schema({
+  _id: {
     type: String,
     required: true,
   },
-  availableTimes: {
+  bookedTimes: {
     type: [Date],
     required: true,
   },
@@ -16,4 +16,4 @@ const doctorSchema = new mongoose.Schema({
   },
 });
 
-module.exports = Doctor = mongoose.model("Doctor", doctorSchema);
+module.exports = Patient = mongoose.model("Patient", patientSchema);
