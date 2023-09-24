@@ -16,7 +16,7 @@ const Profile = () => {
       console.log(currentUser);
       setIsLoading(false);
     }
-  }, []);
+  }, [getUser]);
 
   const handleLogout = () => {
     logout();

@@ -37,6 +37,10 @@ dataRoute.get("/", (req, res) => {
   res.send("Hello");
 });
 
+app.get("/", (req, res) => {
+  res.send("Hello");
+});
+
 app.use("/doctor", require("./routes/doctor.router.js"));
 app.use("/patient", require("./routes/patient.router.js"));
 app.use("/booking", require("./routes/booking.router.js"));

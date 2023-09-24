@@ -1,15 +1,15 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 
 const Home = () => {
-  const [fact, setFact] = useState("");
+  const [fact, setFact] = useState("Test");
   const { currentUser } = useAuth();
 
   // for the request to our backend API. I suggest using ReactQuery. The normal fetch() method is
   // amazing, but it gets tedious when dealing with caching, retries, and so on. ReactQuery takes
   // care of that for us.
-  
+
   useEffect(() => {
     const fetchFact = async () => {
       console.log("called");
@@ -23,7 +23,7 @@ const Home = () => {
           },
         };
 
-        const res = await fetch("http://localhost:3001/data", payloadHeader);
+        const res = await fetch("http://localhost:3001/", payloadHeader);
         setFact(await res.text());
       } catch (err) {
         console.log(err);
@@ -35,8 +35,8 @@ const Home = () => {
 
   return (
     <div>
-      This is a React Firebase Auth template. Below is a fact from a protected route on the server.
-
+      This is a React Firebase Auth template. Below is a fact from a protected
+      route on the server.
       <p>{fact}</p>
       <br />
       <Link to="/profile">Profile</Link>
