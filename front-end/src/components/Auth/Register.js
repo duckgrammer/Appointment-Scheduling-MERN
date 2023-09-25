@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import { Button, Form, Input, Typography, Space, Checkbox } from "antd";
-
 const { Text, Link } = Typography;
+
 const Register = () => {
   const { register, getUser } = useAuth();
   const history = useHistory();
