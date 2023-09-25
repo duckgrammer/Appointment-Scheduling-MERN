@@ -1,28 +1,24 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
+import { Button, Form, Input, Typography, Space, Checkbox } from "antd";
 
+const { Text, Link } = Typography;
 const Register = () => {
   const { register } = useAuth();
   const history = useHistory();
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (value) => {
     setError("");
-    if (password !== passwordConfirm) {
+    if (value.password !== value.confirm) {
       setError("Passwords do not match");
       return;
     }
     try {
       setIsLoading(true);
-      await register(name, email, password);
+      await register(value.name, value.email, value.password);
       history.push("/");
     } catch (error) {
       setError(error.message);
@@ -30,54 +26,106 @@ const Register = () => {
     setIsLoading(false);
   };
 
+  const validateMessages = {
+    required: "Required Field!",
+    types: {
+      email: "Not a valid email!",
+    },
+  };
+
   return (
-    <div>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div style={{ textAlign: "center" }}>
+      <div
+        style={{
+          display: "inline-block",
+          maxWidth: "400px",
+          width: "100%",
+        }}
+      >
+        <Form
+          onFinish={handleSubmit}
+          validateMessages={validateMessages}
+          style={{ textAlign: "left" }}
+        >
+          <h1>Sign Up</h1>
           <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div>
+          <Form.Item name="name" rules={[{ required: true }]}>
+            <Input placeholder="Your name here" />
+          </Form.Item>
           <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+              },
+            ]}
+          >
+            <Input placeholder="Your email address" />
+          </Form.Item>
           <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="passwordConfirm">Confirm Password</label>
-          <input
-            type="password"
-            id="passwordConfirm"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-          />
-        </div>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Loading..." : "Register"}
-        </button>
-        {error && <p>{error}</p>}
-      </form>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+          <Form.Item name="password" rules={[{ required: true }]}>
+            <Input.Password placeholder="Your password" />
+          </Form.Item>
+          <label htmlFor="password">Confirm Password</label>
+          <Form.Item
+            name="confirm"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please confirm your password!",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("The new password that you entered do not match!")
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password placeholder="Confrim your password" />
+          </Form.Item>
+          <Form.Item
+            valuePropName="checked"
+            initialValue="false"
+            rules={[
+              {
+                required: true,
+                transform: (value) => value || undefined, // Those two lines
+                type: "boolean", // Do the magic
+                message: "Please agree the terms and conditions.",
+              },
+            ]}
+          >
+            <Checkbox>
+              I agree to the Terms of Services and Privacy Policy
+            </Checkbox>
+          </Form.Item>
+          <Form.Item className="submit">
+            <Button
+              block
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
+              {isLoading ? "Loading..." : "Continue"}
+            </Button>
+          </Form.Item>
+        </Form>
+        <Space direction="vertical">
+          <Text>
+            Have an account? <Link href="/login">Sign in</Link>
+          </Text>
+          {error && <p>{error}</p>}
+        </Space>
+      </div>
     </div>
   );
 };

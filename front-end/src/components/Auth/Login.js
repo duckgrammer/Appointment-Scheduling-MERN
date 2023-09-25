@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Typography, Space } from "antd";
+const { Text, Link } = Typography;
 
 const Login = () => {
   const { login } = useAuth();
@@ -29,47 +30,58 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h1>Sign In</h1>
-      <p>Hi there! Nice to see you again.</p>
-      <Form
-        onFinish={onFinish}
-        validateMessages={validateMessages}
-        style={{ maxWidth: 600 }}
+    <div style={{ textAlign: "center" }}>
+      <div
+        style={{
+          display: "inline-block",
+          maxWidth: "400px",
+          width: "100%",
+        }}
       >
-        <label htmlFor="email">Email</label>
-        <Form.Item
-          name="email"
-          rules={[
-            {
-              required: true,
-              type: "email",
-            },
-          ]}
+        <Form
+          onFinish={onFinish}
+          validateMessages={validateMessages}
+          style={{ textAlign: "left" }}
         >
-          <Input placeholder="Email" />
-        </Form.Item>
-        <label htmlFor="password">Password</label>
-        <Form.Item name="password" rules={[{ required: true }]}>
-          <Input.Password placeholder="Password" />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
+          <h1>Sign In</h1>
+          <p>Hi there! Nice to see you again.</p>
+          <label htmlFor="email">Email</label>
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+              },
+            ]}
           >
-            {isLoading ? "Loading..." : "Login"}
-          </Button>
-        </Form.Item>
-      </Form>
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
-      <p>
-        Forgot your password? <Link to="/forgot-password">Reset</Link>
-      </p>
-      {error && <p>{error}</p>}
+            <Input placeholder="Your email address" />
+          </Form.Item>
+          <label htmlFor="password">Password</label>
+          <Form.Item name="password" rules={[{ required: true }]}>
+            <Input.Password placeholder="Password" />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              block
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
+              {isLoading ? "Loading..." : "Login"}
+            </Button>
+          </Form.Item>
+        </Form>
+        <Space direction="vertical">
+          <Text>
+            Don't have an account? <Link href="/register">Register</Link>
+          </Text>
+          <Text>
+            Forgot your password? <Link href="/forgot-password">Reset</Link>
+          </Text>
+          {error && <p>Invlaid login credentials</p>}
+        </Space>
+      </div>
     </div>
   );
 };
