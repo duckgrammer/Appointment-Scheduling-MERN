@@ -11,7 +11,7 @@ const patientSchema = new mongoose.Schema({
     required: true,
   },
   bookings: {
-    type: ObjectId,
+    type: [ObjectId],
     required: true,
   },
 });

@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import { Button, Form, Input, Typography, Space, Checkbox } from "antd";
 
 const { Text, Link } = Typography;
 const Register = () => {
-  const { register } = useAuth();
+  const { register, getUser } = useAuth();
   const history = useHistory();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [currentUserId, setUserId] = useState(null);
 
   const handleSubmit = async (value) => {
     setError("");
@@ -19,12 +20,48 @@ const Register = () => {
     try {
       setIsLoading(true);
       await register(value.name, value.email, value.password);
-      history.push("/");
+      createUser();
     } catch (error) {
       setError(error.message);
     }
     setIsLoading(false);
   };
+
+  const createUser = async () => {
+    let currentUser = getUser();
+    if (currentUser) {
+      setUserId(currentUser.uid);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFact = async () => {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      try {
+        var raw = JSON.stringify({
+          _id: currentUserId,
+        });
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        await fetch("http://localhost:3001/patient/create", requestOptions);
+        history.push("/");
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (currentUserId !== null) {
+      fetchFact();
+    }
+  }, [currentUserId, history]);
 
   const validateMessages = {
     required: "Required Field!",
