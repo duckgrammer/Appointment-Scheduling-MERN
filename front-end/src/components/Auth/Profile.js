@@ -1,6 +1,8 @@
 import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../AuthContext";
+import { Button } from "antd";
+import { DownloadOutlined, PlusOutlined } from "@ant-design/icons";
 
 const Profile = () => {
   const { logout, getUser } = useAuth();
@@ -25,11 +27,18 @@ const Profile = () => {
 
   return (
     <div>
-      <h1>Profile</h1>
       {isLoading ? (
         <p>Loading...</p>
       ) : (
         <div>
+          <div>
+            <h1>{user.displayName}'s Appointments</h1>
+            <DownloadOutlined
+              rotate={270}
+              style={{ fontSize: "20px", color: "#ff5065" }}
+              onClick={handleLogout}
+            />
+          </div>
           <p>
             <strong>Name:</strong> {user.displayName}
           </p>
@@ -39,7 +48,16 @@ const Profile = () => {
           <p>
             <strong>Email:</strong> {user.email}
           </p>
-          <button onClick={handleLogout}>Logout</button>
+          <Button
+            onClick={() => history.push("/booking")}
+            type="primary"
+            size={"large"}
+            icon={
+              <PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />
+            }
+          >
+            Booking Appointment
+          </Button>
         </div>
       )}
     </div>
