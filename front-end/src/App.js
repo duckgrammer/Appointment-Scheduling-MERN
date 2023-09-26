@@ -1,11 +1,21 @@
 import { BrowserRouter } from "react-router-dom";
+import { ConfigProvider } from "antd";
 import Router from "./Router";
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Router />
-    </BrowserRouter>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#ff5065",
+          //colorBgContainer: "#f6ffed",
+        },
+      }}
+    >
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </ConfigProvider>
   );
 };
 

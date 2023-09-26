@@ -155,6 +155,7 @@ const Booking = () => {
   const handleSubmit = () => {
     if (selectTime !== null) {
       console.log(selectTime);
+      console.log(selectDoctor._id);
     }
   };
 
