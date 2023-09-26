@@ -7,6 +7,7 @@ const createDoctor = async (req, res) => {
     name: req.body.name,
     availableTimes: [],
     bookings: [],
+    specialization: req.body.specialization,
   });
 
   try {

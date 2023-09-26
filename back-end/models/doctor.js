@@ -14,6 +14,10 @@ const doctorSchema = new mongoose.Schema({
     type: [ObjectId],
     required: true,
   },
+  specialization: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = Doctor = mongoose.model("Doctor", doctorSchema);
