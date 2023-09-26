@@ -1,5 +1,9 @@
 import { Form, Button, Typography, Select, Divider } from "antd";
-import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  ArrowLeftOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
@@ -7,12 +11,15 @@ const { Text, Title } = Typography;
 const { Option } = Select;
 
 const Booking = () => {
-  const { logout, getUser } = useAuth();
+  const { getUser } = useAuth();
   const [user, setUser] = useState(null);
   const history = useHistory();
   const [doctors, setDoctors] = useState(null);
   const [dayIndex, setDayIndex] = useState(null);
   const [timeIndex, setTimeIndex] = useState(null);
+  const [bookingId, setBookingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Sorted Lists
   const [doctorList, setDoctorList] = useState(null);
@@ -164,13 +171,109 @@ const Booking = () => {
     setTimeIndex(i);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectTime !== null) {
-      console.log(selectTime);
-      console.log(selectDoctor._id);
-      console.log(user.uid);
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        patientId: user.uid,
+        doctorId: selectDoctor._id,
+        time: selectTime,
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      try {
+        setIsLoading(true);
+        await fetch("http://localhost:3001/booking/create", requestOptions)
+          .then((response) => response.json())
+          .then((data) => {
+            setBookingId(data._id);
+          });
+      } catch (error) {
+        setError(error.message);
+      }
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const doctorBookAppointment = async () => {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        time: selectTime,
+        bookingId: bookingId,
+      });
+
+      var requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      try {
+        await fetch(
+          "http://localhost:3001/doctor/bookTime/" + selectDoctor._id,
+          requestOptions
+        );
+      } catch (error) {
+        console.log(error);
+        setError(error.message);
+      }
+    };
+
+    const patientAddAppointment = async () => {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        bookingId: bookingId,
+        time: selectTime,
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      try {
+        await fetch(
+          "http://localhost:3001/patient/addAppointment/" + user.uid,
+          requestOptions
+        );
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    const submit = async () => {
+      await doctorBookAppointment();
+      await patientAddAppointment();
+      await setIsLoading(false);
+      history.push("/");
+    };
+
+    if (bookingId !== null) {
+      submit();
+    }
+  }, [bookingId, selectDoctor, selectTime, user, history]);
+
+  useEffect(() => {
+    if (error !== null) {
+      console.log(error);
+    }
+  }, [error]);
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -252,7 +355,7 @@ const Booking = () => {
               htmlType="submit"
               block
             >
-              Book now
+              {isLoading ? <LoadingOutlined /> : "Book now"}
             </Button>
           </Form.Item>
         </Form>
