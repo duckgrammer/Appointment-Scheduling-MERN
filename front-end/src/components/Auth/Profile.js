@@ -113,7 +113,7 @@ const Profile = () => {
   }, [bookingList]);
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", padding: "1em" }}>
       <div
         style={{
           display: "inline-block",
@@ -170,15 +170,19 @@ const Profile = () => {
             );
           })
         )}
-        <Button
-          onClick={() => history.push("/booking")}
-          type="primary"
-          size={"large"}
-          icon={<PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />}
-          block
-        >
-          Booking Appointment
-        </Button>
+        <div style={{ paddingInline: "1em" }}>
+          <Button
+            onClick={() => history.push("/booking")}
+            type="primary"
+            size="large"
+            icon={
+              <PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />
+            }
+            block
+          >
+            Booking Appointment
+          </Button>
+        </div>
       </div>
     </div>
   );

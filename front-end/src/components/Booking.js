@@ -22,7 +22,7 @@ const Booking = () => {
   const [error, setError] = useState(null);
 
   // Sorted Lists
-  const [doctorList, setDoctorList] = useState(null);
+  const [doctorSpecList, setDoctorSpecList] = useState(null);
   const [monthYearList, setMonthYearList] = useState(null);
   const [dayList, setDayList] = useState(null);
   const [timeList, setTimeList] = useState(null);
@@ -51,7 +51,6 @@ const Booking = () => {
           date.getFullYear() === selectYear &&
           date.getDate() === selectDay
         ) {
-          console.log(date.getDate());
           uniqueTime.add(new Date(time));
         }
       });
@@ -142,23 +141,41 @@ const Booking = () => {
   }, []);
 
   useEffect(() => {
-    const doctorMenu = () => {
-      let menus = doctors.map((doctor, key) => {
-        return (
-          <Option key={key} value={doctor.key} icon={<UserOutlined />}>
-            {doctor.name}
-          </Option>
-        );
+    const doctorSort = () => {
+      const groupedDoctors = {};
+
+      doctors.forEach((doctor, key) => {
+        const { specialization } = doctor;
+
+        if (!groupedDoctors[specialization]) {
+          groupedDoctors[specialization] = [];
+        }
+
+        doctor["value"] = key;
+
+        doctor["label"] = doctor["name"];
+        delete doctor["name"];
+
+        groupedDoctors[specialization].push(doctor);
       });
-      setDoctorList(menus);
+
+      let docSpec = [];
+      for (const key in groupedDoctors) {
+        docSpec.push({
+          label: key,
+          options: groupedDoctors[key],
+        });
+      }
+
+      setDoctorSpecList(docSpec);
     };
 
     if (doctors !== null) {
-      doctorMenu();
+      doctorSort();
     }
   }, [doctors]);
 
-  const chooseDoctor = (e) => {
+  const chooseDocSpec = (e) => {
     setSelectYear(null);
     setSelectMonth(null);
     setSelectDay(null);
@@ -184,7 +201,6 @@ const Booking = () => {
     setTimeIndex(null);
     setSelectTime(null);
 
-    console.log("day: " + parseInt(e.split(" ")[0]));
     setSelectDay(parseInt(e.split(" ")[0]));
     setDayIndex(i);
   };
@@ -192,7 +208,6 @@ const Booking = () => {
   const chooseTime = (e, i) => {
     setSelectTime(e.toISOString());
     setTimeIndex(i);
-    //console.log(e);
   };
 
   const handleSubmit = async () => {
@@ -300,7 +315,7 @@ const Booking = () => {
   }, [error]);
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", padding: "1em" }}>
       <div
         style={{
           display: "inline-block",
@@ -311,7 +326,6 @@ const Booking = () => {
         <div
           style={{
             textAlign: "left",
-            paddingTop: "12px",
           }}
         >
           <ArrowLeftOutlined
@@ -322,18 +336,24 @@ const Booking = () => {
         <Form style={{ textAlign: "left" }} onFinish={handleSubmit}>
           <Title level={2}>Booking Appointment</Title>
           <Form.Item>
-            <Select placeholder="Select Doctor" onChange={chooseDoctor}>
-              {doctorList}
-            </Select>
+            <Select
+              style={{ width: 200 }}
+              options={doctorSpecList}
+              onChange={chooseDocSpec}
+              placeholder="choose doctor"
+              size="large"
+            />
           </Form.Item>
           <Form.Item>
             <Select
-              disabled={selectDoctor === null}
-              placeholder="Select Date"
+              style={{ width: 200 }}
+              disabled={monthYearList === null || monthYearList.length === 0}
+              placeholder="choose month"
               onChange={chooseMonth}
+              size="large"
               value={
                 monthYearList === null || monthYearList.length === 0
-                  ? "No Availability"
+                  ? "no availability"
                   : selectYear === null || selectMonth === null
                   ? null
                   : new Date(selectYear, selectMonth).toLocaleDateString(
@@ -392,12 +412,13 @@ const Booking = () => {
             </>
           )}
 
-          <Form.Item>
+          <Form.Item style={{ paddingInline: "1em" }}>
             <Button
               disabled={selectTime === null}
               type="primary"
               htmlType="submit"
               block
+              size="large"
             >
               {isLoading ? <LoadingOutlined /> : "Book now"}
             </Button>
