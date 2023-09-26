@@ -6,37 +6,69 @@ const { Option } = Select;
 
 const Booking = () => {
   const [doctors, setDoctors] = useState(null);
+  const [dayIndex, setDayIndex] = useState(null);
+  const [timeIndex, setTimeIndex] = useState(null);
+
+  // Sorted Lists
   const [doctorList, setDoctorList] = useState(null);
-  const [selectDoctor, setSelectDoctor] = useState(null);
-  const [dateList, setDateList] = useState(null);
-  const [selectMonth, setSelectMonth] = useState(null);
+  const [monthYearList, setMonthYearList] = useState(null);
   const [dayList, setDayList] = useState(null);
+  const [timeList, setTimeList] = useState(null);
+
+  // Selected Choices
+  const [selectDoctor, setSelectDoctor] = useState(null);
+  const [selectMonth, setSelectMonth] = useState(null);
+  const [selectYear, setSelectYear] = useState(null);
+  const [selectDay, setSelectDay] = useState(null);
+  const [selectTime, setSelectTime] = useState(null);
+
+  useEffect(() => {
+    const availableTime = () => {
+      let uniqueTime = new Set();
+      selectDoctor.availableTimes.forEach((time) => {
+        let date = new Date(time);
+        if (
+          date.getMonth() === selectMonth &&
+          date.getFullYear() === selectYear &&
+          date.getDay() === selectDay
+        ) {
+          uniqueTime.add(new Date(time));
+        }
+      });
+
+      setTimeList(uniqueTime);
+    };
+
+    if (selectDay !== null && selectMonth !== null && selectYear !== null) {
+      availableTime();
+    }
+  }, [selectDay, selectMonth, selectYear, selectDoctor]);
 
   useEffect(() => {
     const availableDay = () => {
       let uniqueDay = new Set();
       selectDoctor.availableTimes.forEach((time) => {
         let date = new Date(time);
-        let monthYear = new Date(selectMonth);
         if (
-          date.getMonth() === monthYear.getMonth() &&
-          date.getFullYear() === monthYear.getFullYear()
+          date.getMonth() === selectMonth &&
+          date.getFullYear() === selectYear
         ) {
           uniqueDay.add(
-            date.toLocaleDateString("en-us", {
+            new Date(time).toLocaleDateString("en-us", {
               day: "numeric",
               weekday: "short",
             })
           );
         }
       });
+
       setDayList(uniqueDay);
     };
 
-    if (selectMonth !== null) {
+    if (selectMonth !== null && selectYear !== null) {
       availableDay();
     }
-  }, [selectMonth, selectDoctor]);
+  }, [selectMonth, selectYear, selectDoctor]);
 
   useEffect(() => {
     const availableMonthYear = () => {
@@ -57,7 +89,7 @@ const Booking = () => {
           </Option>
         );
       });
-      setDateList(menus);
+      setMonthYearList(menus);
     };
 
     if (selectDoctor !== null) {
@@ -105,11 +137,25 @@ const Booking = () => {
   };
 
   const chooseMonth = (e) => {
-    setSelectMonth(e);
+    let date = new Date(e);
+    setSelectYear(date.getFullYear());
+    setSelectMonth(date.getMonth());
   };
 
-  const chooseDay = (e) => {
-    console.log(e.target.outerText);
+  const chooseDay = (e, i) => {
+    setSelectDay(parseInt(e.split(" ")[0]) - 1);
+    setDayIndex(i);
+  };
+
+  const chooseTime = (e, i) => {
+    setSelectTime(e.toISOString());
+    setTimeIndex(i);
+  };
+
+  const handleSubmit = () => {
+    if (selectTime !== null) {
+      console.log(selectTime);
+    }
   };
 
   return (
@@ -121,7 +167,7 @@ const Booking = () => {
           width: "100%",
         }}
       >
-        <Form style={{ textAlign: "left" }}>
+        <Form style={{ textAlign: "left" }} onFinish={handleSubmit}>
           <Title level={2}>Booking Appointment</Title>
           <Form.Item>
             <Select placeholder="Select Doctor" onChange={chooseDoctor}>
@@ -129,8 +175,12 @@ const Booking = () => {
             </Select>
           </Form.Item>
           <Form.Item>
-            <Select placeholder="Select Date" onChange={chooseMonth}>
-              {dateList}
+            <Select
+              disabled={selectDoctor === null}
+              placeholder="Select Date"
+              onChange={chooseMonth}
+            >
+              {monthYearList}
             </Select>
           </Form.Item>
 
@@ -140,16 +190,44 @@ const Booking = () => {
               ? null
               : [...dayList].map((day, i) => {
                   return (
-                    <Button key={i} value={day} onClick={chooseDay}>
+                    <Button
+                      key={i}
+                      onClick={() => chooseDay(day, i)}
+                      style={i === dayIndex ? { borderColor: "#ff0000" } : {}}
+                    >
                       {day}
                     </Button>
                   );
                 })}
           </div>
           <Divider />
+          <div style={{ display: "flex", gap: "10px" }}>
+            {timeList === null
+              ? null
+              : [...timeList].map((day, i) => {
+                  return (
+                    <Button
+                      key={i}
+                      onClick={() => chooseTime(day, i)}
+                      style={i === timeIndex ? { borderColor: "#ff0000" } : {}}
+                    >
+                      {day.toLocaleTimeString("en-us", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </Button>
+                  );
+                })}
+          </div>
           <Divider />
           <Form.Item>
-            <Button type="primary" block>
+            <Button
+              disabled={selectTime === null}
+              type="primary"
+              htmlType="submit"
+              block
+            >
               Book now
             </Button>
           </Form.Item>
