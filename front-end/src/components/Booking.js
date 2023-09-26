@@ -1,10 +1,15 @@
 import { Form, Button, Typography, Select, Divider } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../AuthContext";
 const { Text, Title } = Typography;
 const { Option } = Select;
 
 const Booking = () => {
+  const { logout, getUser } = useAuth();
+  const [user, setUser] = useState(null);
+  const history = useHistory();
   const [doctors, setDoctors] = useState(null);
   const [dayIndex, setDayIndex] = useState(null);
   const [timeIndex, setTimeIndex] = useState(null);
@@ -21,6 +26,13 @@ const Booking = () => {
   const [selectYear, setSelectYear] = useState(null);
   const [selectDay, setSelectDay] = useState(null);
   const [selectTime, setSelectTime] = useState(null);
+
+  useEffect(() => {
+    let currentUser = getUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
+  }, [getUser]);
 
   useEffect(() => {
     const availableTime = () => {
@@ -156,6 +168,7 @@ const Booking = () => {
     if (selectTime !== null) {
       console.log(selectTime);
       console.log(selectDoctor._id);
+      console.log(user.uid);
     }
   };
 
@@ -168,6 +181,17 @@ const Booking = () => {
           width: "100%",
         }}
       >
+        <div
+          style={{
+            textAlign: "left",
+            paddingTop: "12px",
+          }}
+        >
+          <ArrowLeftOutlined
+            style={{ color: "#ff5065" }}
+            onClick={() => history.push("/")}
+          />
+        </div>
         <Form style={{ textAlign: "left" }} onFinish={handleSubmit}>
           <Title level={2}>Booking Appointment</Title>
           <Form.Item>
@@ -184,7 +208,6 @@ const Booking = () => {
               {monthYearList}
             </Select>
           </Form.Item>
-
           <Text>Select Schedule</Text>
           <div style={{ display: "flex", gap: "10px" }}>
             {dayList === null

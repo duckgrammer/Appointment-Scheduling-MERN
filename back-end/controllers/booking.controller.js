@@ -6,6 +6,7 @@ const createBooking = async (req, res) => {
   const doctor = new Booking({
     patientId: req.body.patientId,
     doctorId: req.body.doctorId,
+    time: req.body.time,
   });
 
   try {
@@ -37,7 +38,7 @@ const getBookingById = async (req, res) => {
   }
 };
 
-// Delete booking
+// Delete booking by Id
 const deleteBooking = async (req, res) => {
   try {
     const filter = { _id: new mongoose.Types.ObjectId(req.params.bookingId) };

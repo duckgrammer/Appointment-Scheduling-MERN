@@ -10,6 +10,10 @@ const bookingSchema = new mongoose.Schema({
     type: ObjectId,
     required: true,
   },
+  time: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = Booking = mongoose.model("Booking", bookingSchema);
