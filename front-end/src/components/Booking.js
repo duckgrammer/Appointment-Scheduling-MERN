@@ -319,7 +319,7 @@ const Booking = () => {
       <div
         style={{
           display: "inline-block",
-          maxWidth: "400px",
+          maxWidth: "600px",
           width: "100%",
         }}
       >

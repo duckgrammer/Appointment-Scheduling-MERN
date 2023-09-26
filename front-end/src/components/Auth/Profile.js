@@ -16,7 +16,7 @@ const Profile = () => {
 
   const [user, setUser] = useState(null);
   const [bookingList, setBookingList] = useState(null);
-  const [appointmentList, setAppointmentList] = useState(null);
+  const [appointmentDayList, setAppointmentDayList] = useState(null);
   let [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -104,7 +104,27 @@ const Profile = () => {
         alist.push(doctorInfo);
       }
 
-      setAppointmentList(alist);
+      alist.forEach((item) => {
+        item.time = new Date(item.time);
+      });
+
+      alist.sort((a, b) => a.time - b.time);
+
+      const groupedData = {};
+      alist.forEach((item) => {
+        const dateKey = item.time.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        if (!groupedData[dateKey]) {
+          groupedData[dateKey] = [];
+        }
+        groupedData[dateKey].push(item);
+      });
+
+      console.log(groupedData);
+      setAppointmentDayList(groupedData);
     };
 
     if (bookingList !== null) {
@@ -113,26 +133,27 @@ const Profile = () => {
   }, [bookingList]);
 
   return (
-    <div style={{ textAlign: "center", padding: "1em" }}>
+    <div style={{ textAlign: "center" }}>
       <div
         style={{
           display: "inline-block",
-          maxWidth: "400px",
+          maxWidth: "600px",
           width: "100%",
           textAlign: "left",
+          minHeight: "100vh",
+          marginTop: "1em",
         }}
       >
-        {isLoading ? (
-          <LoadingOutlined style={{ marginBottom: "0.5em" }} />
-        ) : (
+        {user ? (
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
-              paddingBlock: "0.5em",
+              padding: "1em",
+              marginBottom: "1em",
             }}
           >
-            <Title level={2} style={{ marginBlock: "0px" }}>
+            <Title level={5} style={{ marginBlock: "0px" }}>
               {user.displayName}'s Appointments
             </Title>
             <DownloadOutlined
@@ -141,36 +162,56 @@ const Profile = () => {
               onClick={handleLogout}
             />
           </div>
-        )}
-        {appointmentList === null ? (
-          <Text>
-            <LoadingOutlined /> Loading
-          </Text>
-        ) : (
-          appointmentList.map((detail, i) => {
-            return (
-              <Card
+        ) : null}
+        {appointmentDayList ? (
+          Object.keys(appointmentDayList).map((key, i) => (
+            <>
+              <div
                 key={i}
-                title={detail.name}
-                extra={new Date(detail.time).toLocaleTimeString("en-us", {
-                  hour: "numeric",
-                  minute: "numeric",
-                  hour12: true,
-                })}
                 style={{
-                  marginBottom: "0.5em",
-                  display: "flex",
-                  flexDirection: "column",
+                  width: "100%",
+                  textAlign: "center",
                   backgroundColor: "#f0f0f0",
+                  marginBottom: "1em",
+                  padding: "0.25em",
                 }}
-                description="This is the description"
               >
-                <Meta description={detail.specialization} />
-              </Card>
-            );
-          })
+                <Text>{key}</Text>
+              </div>
+              {appointmentDayList[key].map((detail, j) => (
+                <Card
+                  key={j}
+                  title={detail.name}
+                  extra={new Date(detail.time).toLocaleTimeString("en-us", {
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                  })}
+                  style={{
+                    marginBottom: "1em",
+                    display: "flex",
+                    flexDirection: "column",
+                    backgroundColor: "#f0f0f0",
+                    marginInline: "1em",
+                  }}
+                  description="This is the description"
+                >
+                  <Meta description={detail.specialization} />
+                </Card>
+              ))}
+            </>
+          ))
+        ) : (
+          <div
+            style={{
+              marginLeft: "1em",
+              paddingBottom: "2em",
+            }}
+          >
+            <LoadingOutlined /> <Text>Loading</Text>
+          </div>
         )}
-        <div style={{ paddingInline: "1em" }}>
+        <div style={{ paddingInline: "2em" }}>
           <Button
             onClick={() => history.push("/booking")}
             type="primary"

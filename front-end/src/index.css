@@ -1,0 +1,12 @@
+body {
+    margin: 0px;
+}
+
+:where(.css-dev-only-do-not-override-1r31ld1).ant-card .ant-card-head {
+    min-height: 60px;
+}
+
+:where(.css-dev-only-do-not-override-1r31ld1).ant-card .ant-card-body {
+    padding-bottom: 25px;
+    padding-top: 0px;
+}
