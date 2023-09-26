@@ -49,8 +49,9 @@ const Booking = () => {
         if (
           date.getMonth() === selectMonth &&
           date.getFullYear() === selectYear &&
-          date.getDay() === selectDay
+          date.getDate() === selectDay
         ) {
+          console.log(date.getDate());
           uniqueTime.add(new Date(time));
         }
       });
@@ -60,6 +61,8 @@ const Booking = () => {
 
     if (selectDay !== null && selectMonth !== null && selectYear !== null) {
       availableTime();
+    } else {
+      setTimeList(null);
     }
   }, [selectDay, selectMonth, selectYear, selectDoctor]);
 
@@ -86,6 +89,8 @@ const Booking = () => {
 
     if (selectMonth !== null && selectYear !== null) {
       availableDay();
+    } else {
+      setDayList(null);
     }
   }, [selectMonth, selectYear, selectDoctor]);
 
@@ -113,6 +118,8 @@ const Booking = () => {
 
     if (selectDoctor !== null) {
       availableMonthYear();
+    } else {
+      setMonthYearList(null);
     }
   }, [selectDoctor]);
 
@@ -152,23 +159,40 @@ const Booking = () => {
   }, [doctors]);
 
   const chooseDoctor = (e) => {
+    setSelectYear(null);
+    setSelectMonth(null);
+    setSelectDay(null);
+    setSelectTime(null);
+    setDayIndex(null);
+    setTimeIndex(null);
+
     setSelectDoctor(doctors[e]);
   };
 
   const chooseMonth = (e) => {
+    setSelectDay(null);
+    setDayIndex(null);
+    setTimeIndex(null);
+    setSelectTime(null);
+
     let date = new Date(e);
     setSelectYear(date.getFullYear());
     setSelectMonth(date.getMonth());
   };
 
   const chooseDay = (e, i) => {
-    setSelectDay(parseInt(e.split(" ")[0]) - 1);
+    setTimeIndex(null);
+    setSelectTime(null);
+
+    console.log("day: " + parseInt(e.split(" ")[0]));
+    setSelectDay(parseInt(e.split(" ")[0]));
     setDayIndex(i);
   };
 
   const chooseTime = (e, i) => {
     setSelectTime(e.toISOString());
     setTimeIndex(i);
+    //console.log(e);
   };
 
   const handleSubmit = async () => {
@@ -307,15 +331,29 @@ const Booking = () => {
               disabled={selectDoctor === null}
               placeholder="Select Date"
               onChange={chooseMonth}
+              value={
+                monthYearList === null || monthYearList.length === 0
+                  ? "No Availability"
+                  : selectYear === null || selectMonth === null
+                  ? null
+                  : new Date(selectYear, selectMonth).toLocaleDateString(
+                      "en-us",
+                      {
+                        year: "numeric",
+                        month: "long",
+                      }
+                    )
+              }
             >
               {monthYearList}
             </Select>
           </Form.Item>
-          <Text>Select Schedule</Text>
-          <div style={{ display: "flex", gap: "10px" }}>
-            {dayList === null
-              ? null
-              : [...dayList].map((day, i) => {
+
+          {dayList === null ? null : (
+            <>
+              <Text>Select Schedule</Text>
+              <div style={{ display: "flex", gap: "10px" }}>
+                {[...dayList].map((day, i) => {
                   return (
                     <Button
                       key={i}
@@ -326,12 +364,15 @@ const Booking = () => {
                     </Button>
                   );
                 })}
-          </div>
-          <Divider />
-          <div style={{ display: "flex", gap: "10px" }}>
-            {timeList === null
-              ? null
-              : [...timeList].map((day, i) => {
+              </div>
+              <Divider />
+            </>
+          )}
+
+          {timeList === null ? null : (
+            <>
+              <div style={{ display: "flex", gap: "10px" }}>
+                {[...timeList].map((day, i) => {
                   return (
                     <Button
                       key={i}
@@ -346,8 +387,11 @@ const Booking = () => {
                     </Button>
                   );
                 })}
-          </div>
-          <Divider />
+              </div>
+              <Divider />
+            </>
+          )}
+
           <Form.Item>
             <Button
               disabled={selectTime === null}
