@@ -107,12 +107,6 @@ const Profile = () => {
                 onClick={handleLogout}
               />
             </div>
-            <p>
-              <strong>ID:</strong> {user.uid}
-            </p>
-            <p>
-              <strong>Email:</strong> {user.email}
-            </p>
             {appointmentList.map((detail, i) => {
               return (
                 <Card
@@ -123,7 +117,11 @@ const Profile = () => {
                     minute: "numeric",
                     hour12: true,
                   })}
-                  style={{ display: "flex", flexDirection: "column" }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    backgroundColor: "#f0f0f0",
+                  }}
                 >
                   <Text>{detail.patientId}</Text>
                 </Card>
