@@ -2,8 +2,13 @@ import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../AuthContext";
 import { Button, Typography, Card } from "antd";
-import { DownloadOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 const { Text, Title } = Typography;
+const { Meta } = Card;
 
 const Profile = () => {
   const { logout, getUser } = useAuth();
@@ -11,7 +16,7 @@ const Profile = () => {
 
   const [user, setUser] = useState(null);
   const [bookingList, setBookingList] = useState(null);
-  const [appointmentList, setAppointmentList] = useState([]);
+  const [appointmentList, setAppointmentList] = useState(null);
   let [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,10 +53,35 @@ const Profile = () => {
 
     if (user !== null) {
       getAppointment();
+      setIsLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
+    const getDoctorById = async (doctorId, time) => {
+      var requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
+
+      try {
+        const response = await fetch(
+          "http://localhost:3001/doctor/getDoctor/" + doctorId,
+          requestOptions
+        );
+        const result = await response.json();
+
+        const doctorInfo = {
+          name: result[0].name,
+          specialization: result[0].specialization,
+          time: time,
+        };
+        return doctorInfo;
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     const getBooking = async () => {
       let alist = [];
 
@@ -61,12 +91,17 @@ const Profile = () => {
           redirect: "follow",
         };
 
-        await fetch(
+        const response = await fetch(
           "http://localhost:3001/booking/getBooking/" + bookingList[i],
           requestOptions
-        )
-          .then((response) => response.json())
-          .then((result) => alist.push(result[0]));
+        );
+        const result = await response.json();
+
+        const doctorInfo = await getDoctorById(
+          result[0].doctorId,
+          result[0].time
+        );
+        alist.push(doctorInfo);
       }
 
       setAppointmentList(alist);
@@ -88,59 +123,62 @@ const Profile = () => {
         }}
       >
         {isLoading ? (
-          <p>Loading...</p>
+          <LoadingOutlined style={{ marginBottom: "0.5em" }} />
         ) : (
-          <div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingBlock: "0.5em",
-              }}
-            >
-              <Title level={2} style={{ marginBlock: "0px" }}>
-                {user.displayName}'s Appointments
-              </Title>
-              <DownloadOutlined
-                rotate={270}
-                style={{ fontSize: "20px", color: "#ff5065" }}
-                onClick={handleLogout}
-              />
-            </div>
-            {appointmentList.map((detail, i) => {
-              return (
-                <Card
-                  key={i}
-                  title={detail.doctorId}
-                  extra={new Date(detail.time).toLocaleTimeString("en-us", {
-                    hour: "numeric",
-                    minute: "numeric",
-                    hour12: true,
-                  })}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    backgroundColor: "#f0f0f0",
-                  }}
-                >
-                  <Text>{detail.patientId}</Text>
-                </Card>
-              );
-            })}
-            <Button
-              style={{ marginTop: "0.5em" }}
-              onClick={() => history.push("/booking")}
-              type="primary"
-              size={"large"}
-              icon={
-                <PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />
-              }
-              block
-            >
-              Booking Appointment
-            </Button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingBlock: "0.5em",
+            }}
+          >
+            <Title level={2} style={{ marginBlock: "0px" }}>
+              {user.displayName}'s Appointments
+            </Title>
+            <DownloadOutlined
+              rotate={270}
+              style={{ fontSize: "20px", color: "#ff5065" }}
+              onClick={handleLogout}
+            />
           </div>
         )}
+        {appointmentList === null ? (
+          <Text>
+            <LoadingOutlined /> Loading
+          </Text>
+        ) : (
+          appointmentList.map((detail, i) => {
+            return (
+              <Card
+                key={i}
+                title={detail.name}
+                extra={new Date(detail.time).toLocaleTimeString("en-us", {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })}
+                style={{
+                  marginBottom: "0.5em",
+                  display: "flex",
+                  flexDirection: "column",
+                  backgroundColor: "#f0f0f0",
+                }}
+                description="This is the description"
+              >
+                <Meta description={detail.specialization} />
+              </Card>
+            );
+          })
+        )}
+        <Button
+          onClick={() => history.push("/booking")}
+          type="primary"
+          size={"large"}
+          icon={<PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />}
+          block
+        >
+          Booking Appointment
+        </Button>
       </div>
     </div>
   );
