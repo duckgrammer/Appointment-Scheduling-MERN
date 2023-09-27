@@ -58,8 +58,10 @@ const removeAppointment = async (req, res) => {
   try {
     const filter = { _id: req.params.patientId };
     const targetAppointment = await Patient.findOneAndUpdate(filter, {
-      $pull: { bookings: req.body.bookingId },
-      $pull: { bookedTimes: req.body.time },
+      $pull: {
+        bookings: req.body.bookingId,
+        bookedTimes: req.body.time,
+      },
     });
     res.send(targetAppointment);
   } catch (error) {
