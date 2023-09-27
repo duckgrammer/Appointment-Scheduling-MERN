@@ -55,7 +55,9 @@ const Booking = () => {
         }
       });
 
-      setTimeList(uniqueTime);
+      let sortedArray = [...uniqueTime];
+      sortedArray.sort((a, b) => a - b);
+      setTimeList(sortedArray);
     };
 
     if (selectDay !== null && selectMonth !== null && selectYear !== null) {
@@ -83,7 +85,9 @@ const Booking = () => {
         }
       });
 
-      setDayList(uniqueDay);
+      let sortedArray = [...uniqueDay];
+      sortedArray.sort((a, b) => a - b);
+      setDayList(sortedArray);
     };
 
     if (selectMonth !== null && selectYear !== null) {
@@ -105,13 +109,17 @@ const Booking = () => {
         );
       });
 
-      let menus = [...uniqueMonthYear].map((time, key) => {
+      let sortedArray = [...uniqueMonthYear];
+      sortedArray.sort((a, b) => a - b);
+
+      let menus = [...sortedArray].map((time, key) => {
         return (
           <Option key={key} value={time} icon={<UserOutlined />}>
             {time}
           </Option>
         );
       });
+
       setMonthYearList(menus);
     };
 
@@ -388,6 +396,7 @@ const Booking = () => {
                         height: "52px",
                         margin: "2px",
                       }}
+                      key={i}
                     >
                       <div
                         key={i}
