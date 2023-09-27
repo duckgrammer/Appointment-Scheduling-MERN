@@ -1,11 +1,12 @@
 import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
-import { Button, Typography, Card } from "antd";
+import { Button, Typography, Card, Dropdown, Popover } from "antd";
 import {
   DownloadOutlined,
   LoadingOutlined,
   PlusOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
 const { Text, Title } = Typography;
 const { Meta } = Card;
@@ -15,6 +16,7 @@ const Profile = () => {
   const history = useHistory();
 
   const [user, setUser] = useState(null);
+  const [bookedTimes, setBookedTimes] = useState(null);
   const [bookingList, setBookingList] = useState(null);
   const [appointmentDayList, setAppointmentDayList] = useState(null);
   let [isLoading, setIsLoading] = useState(true);
@@ -45,7 +47,10 @@ const Profile = () => {
           requestOptions
         )
           .then((response) => response.json())
-          .then((result) => setBookingList(result[0].bookings));
+          .then((result) => {
+            setBookingList(result[0].bookings);
+            setBookedTimes(result[0].bookedTimes);
+          });
       } catch (err) {
         console.log(err);
       }
@@ -58,7 +63,7 @@ const Profile = () => {
   }, [user]);
 
   useEffect(() => {
-    const getDoctorById = async (doctorId, time) => {
+    const getDoctorById = async (id, doctorId, time) => {
       var requestOptions = {
         method: "GET",
         redirect: "follow",
@@ -72,6 +77,8 @@ const Profile = () => {
         const result = await response.json();
 
         const doctorInfo = {
+          id: id,
+          doctorId: doctorId,
           name: result[0].name,
           specialization: result[0].specialization,
           time: time,
@@ -97,11 +104,16 @@ const Profile = () => {
         );
         const result = await response.json();
 
-        const doctorInfo = await getDoctorById(
-          result[0].doctorId,
-          result[0].time
-        );
-        alist.push(doctorInfo);
+        console.log(result);
+        if (result.length !== 0) {
+          const doctorInfo = await getDoctorById(
+            result[0]._id,
+            result[0].doctorId,
+            result[0].time
+          );
+
+          alist.push(doctorInfo);
+        }
       }
 
       alist.forEach((item) => {
@@ -141,6 +153,69 @@ const Profile = () => {
       getBooking();
     }
   }, [bookingList]);
+
+  const deleteAppointment = async (e) => {
+    console.log(e);
+    console.log(user.uid);
+    try {
+      // Delete booking
+      var requestOptions = {
+        method: "DELETE",
+        redirect: "follow",
+      };
+
+      await fetch(
+        "http://localhost:3001/booking/removeBooking/" + e.id,
+        requestOptions
+      );
+
+      //Delete Doctor Booking
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        time: e.time,
+        bookingId: e.id,
+      });
+
+      var requestOptions2 = {
+        method: "PUT",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      await fetch(
+        "http://localhost:3001/doctor/unbookTime/" + e.doctorId,
+        requestOptions2
+      );
+
+      // Delete Patient Booking
+      var myHeaders3 = new Headers();
+      myHeaders3.append("Content-Type", "application/json");
+
+      var raw3 = JSON.stringify({
+        bookingId: e.id,
+        time: e.time,
+      });
+
+      var requestOptions3 = {
+        method: "DELETE",
+        headers: myHeaders3,
+        body: raw3,
+        redirect: "follow",
+      };
+
+      await fetch(
+        "http://localhost:3001/patient/removeAppointment/" + user.uid,
+        requestOptions3
+      );
+
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -199,7 +274,26 @@ const Profile = () => {
               {appointmentDayList[key].map((detail, j) => (
                 <Card
                   key={j}
-                  title={detail.name}
+                  title={
+                    <>
+                      {detail.name}
+                      <Popover
+                        placement="top"
+                        content={
+                          <div
+                            style={{ cursor: "pointer", color: "#ff5065" }}
+                            onClick={() => deleteAppointment(detail)}
+                          >
+                            delete
+                          </div>
+                        }
+                      >
+                        <EllipsisOutlined
+                          style={{ marginInline: "0.5em", cursor: "pointer" }}
+                        />
+                      </Popover>
+                    </>
+                  }
                   extra={new Date(detail.time).toLocaleTimeString("en-us", {
                     hour: "numeric",
                     minute: "numeric",
@@ -247,7 +341,9 @@ const Profile = () => {
           }}
         >
           <Button
-            onClick={() => history.push("/booking")}
+            onClick={() =>
+              history.push("/booking", { bookedTimes: bookedTimes })
+            }
             type="primary"
             size="large"
             style={{ maxWidth: "500px" }}

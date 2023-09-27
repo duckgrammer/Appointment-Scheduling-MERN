@@ -1,10 +1,11 @@
-import { Form, Button, Typography, Select, Divider } from "antd";
+import { Form, Button, Typography, Select, Divider, message } from "antd";
 import {
   UserOutlined,
   ArrowLeftOutlined,
   LoadingOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 const { Text, Title } = Typography;
@@ -14,6 +15,10 @@ const Booking = () => {
   const { getUser } = useAuth();
   const [user, setUser] = useState(null);
   const history = useHistory();
+  const location = useLocation();
+  const bookedTimes = location.state?.bookedTimes || "No message received";
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [doctors, setDoctors] = useState(null);
   const [dayIndex, setDayIndex] = useState(null);
   const [timeIndex, setTimeIndex] = useState(null);
@@ -222,34 +227,41 @@ const Booking = () => {
   };
 
   const handleSubmit = async () => {
-    if (selectTime !== null) {
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      var raw = JSON.stringify({
-        patientId: user.uid,
-        doctorId: selectDoctor._id,
-        time: selectTime,
+    if (bookedTimes.includes(selectTime)) {
+      messageApi.open({
+        type: "error",
+        content: "You already have an appointment at this time",
       });
+    } else {
+      if (selectTime !== null) {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
 
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
+        var raw = JSON.stringify({
+          patientId: user.uid,
+          doctorId: selectDoctor._id,
+          time: selectTime,
+        });
 
-      try {
-        setIsLoading(true);
-        await fetch("http://localhost:3001/booking/create", requestOptions)
-          .then((response) => response.json())
-          .then((data) => {
-            setBookingId(data._id);
-          });
-      } catch (error) {
-        setError(error.message);
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        try {
+          setIsLoading(true);
+          await fetch("http://localhost:3001/booking/create", requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+              setBookingId(data._id);
+            });
+        } catch (error) {
+          setError(error.message);
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
   };
 
@@ -327,6 +339,7 @@ const Booking = () => {
 
   return (
     <div style={{ textAlign: "center", padding: "1.5em" }}>
+      {contextHolder}
       <div
         style={{
           display: "inline-block",
