@@ -9,7 +9,7 @@ const App = () => {
       theme={{
         token: {
           colorPrimary: "#ff5065",
-          //colorBgContainer: "#f6ffed",
+          colorLink: "#ff5065",
         },
       }}
     >

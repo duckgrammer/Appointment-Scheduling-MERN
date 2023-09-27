@@ -315,7 +315,7 @@ const Booking = () => {
   }, [error]);
 
   return (
-    <div style={{ textAlign: "center", padding: "1em" }}>
+    <div style={{ textAlign: "center", padding: "1.5em" }}>
       <div
         style={{
           display: "inline-block",
@@ -334,7 +334,7 @@ const Booking = () => {
           />
         </div>
         <Form style={{ textAlign: "left" }} onFinish={handleSubmit}>
-          <Title level={2}>Booking Appointment</Title>
+          <Title level={3}>Booking Appointment</Title>
           <Form.Item>
             <Select
               style={{ width: 200 }}
@@ -371,17 +371,51 @@ const Booking = () => {
 
           {dayList === null ? null : (
             <>
-              <Text>Select Schedule</Text>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <Title level={5}>Select Schedule</Title>
+              <div
+                style={{
+                  overflowX: "scroll",
+                  overflowY: "hidden",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {[...dayList].map((day, i) => {
                   return (
-                    <Button
-                      key={i}
-                      onClick={() => chooseDay(day, i)}
-                      style={i === dayIndex ? { borderColor: "#ff0000" } : {}}
+                    <div
+                      style={{
+                        display: "inline-block",
+                        width: "52px",
+                        height: "52px",
+                        margin: "2px",
+                      }}
                     >
-                      {day}
-                    </Button>
+                      <div
+                        key={i}
+                        onClick={() => chooseDay(day, i)}
+                        style={
+                          i === dayIndex
+                            ? {
+                                border: "2px solid #ff0000",
+                                backgroundColor: "#f0f0f0",
+                                textAlign: "center",
+                                borderRadius: "8px",
+                                display: "flex",
+                                flexDirection: "column",
+                              }
+                            : {
+                                backgroundColor: "#f0f0f0",
+                                border: "2px solid #f0f0f0",
+                                textAlign: "center",
+                                borderRadius: "8px",
+                                display: "flex",
+                                flexDirection: "column",
+                              }
+                        }
+                      >
+                        <Text>{day.split(" ")[1]}</Text>
+                        <Text>{day.split(" ")[0]}</Text>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
@@ -391,13 +425,26 @@ const Booking = () => {
 
           {timeList === null ? null : (
             <>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                }}
+              >
                 {[...timeList].map((day, i) => {
                   return (
                     <Button
+                      size="large"
                       key={i}
                       onClick={() => chooseTime(day, i)}
-                      style={i === timeIndex ? { borderColor: "#ff0000" } : {}}
+                      style={
+                        i === timeIndex
+                          ? {
+                              border: "2px solid #ff0000",
+                            }
+                          : {}
+                      }
                     >
                       {day.toLocaleTimeString("en-us", {
                         hour: "numeric",

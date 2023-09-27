@@ -7,7 +7,7 @@ import PrivateRoute from "./components/PrivateRoute";
 //import Home from "./components/Home";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
-import Profile from "./components/Auth/Profile";
+import Profile from "./components/Profile";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import Booking from "./components/Booking";
 

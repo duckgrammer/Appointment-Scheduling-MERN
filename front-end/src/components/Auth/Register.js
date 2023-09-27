@@ -10,6 +10,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentUserId, setUserId] = useState(null);
+  const [checked, setChecked] = useState(false);
 
   const handleSubmit = async (value) => {
     setError("");
@@ -70,26 +71,34 @@ const Register = () => {
     },
   };
 
+  const onChange = (e) => {
+    setChecked(e.target.checked);
+  };
+
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ padding: "1em", textAlign: "center" }}>
       <div
         style={{
           display: "inline-block",
           maxWidth: "400px",
           width: "100%",
+          fontWeight: 500,
         }}
       >
         <Form
           onFinish={handleSubmit}
           validateMessages={validateMessages}
           style={{ textAlign: "left" }}
+          requiredMark={false}
         >
           <h1>Sign Up</h1>
-          <label htmlFor="name">Name</label>
-          <Form.Item name="name" rules={[{ required: true }]}>
-            <Input placeholder="Your name here" />
+          <Form.Item
+            name="name"
+            rules={[{ required: true }]}
+            label={<label style={{ color: "#ff5065" }}>Name</label>}
+          >
+            <Input size="large" placeholder="Your name here" />
           </Form.Item>
-          <label htmlFor="email">Email</label>
           <Form.Item
             name="email"
             rules={[
@@ -98,18 +107,22 @@ const Register = () => {
                 type: "email",
               },
             ]}
+            label={<label style={{ color: "#ff5065" }}>Email</label>}
           >
-            <Input placeholder="Your email address" />
+            <Input size="large" placeholder="Your email address" />
           </Form.Item>
-          <label htmlFor="password">Password</label>
-          <Form.Item name="password" rules={[{ required: true }]}>
-            <Input.Password placeholder="Your password" />
+          <Form.Item
+            name="password"
+            rules={[{ required: true }]}
+            label={<label style={{ color: "#ff5065" }}>Password</label>}
+          >
+            <Input.Password size="large" placeholder="Your password" />
           </Form.Item>
-          <label htmlFor="password">Confirm Password</label>
           <Form.Item
             name="confirm"
             dependencies={["password"]}
             hasFeedback
+            label={<label style={{ color: "#ff5065" }}>Confirm Password</label>}
             rules={[
               {
                 required: true,
@@ -127,7 +140,7 @@ const Register = () => {
               }),
             ]}
           >
-            <Input.Password placeholder="Confrim your password" />
+            <Input.Password size="large" placeholder="Confrim your password" />
           </Form.Item>
           <Form.Item
             valuePropName="checked"
@@ -141,8 +154,9 @@ const Register = () => {
               },
             ]}
           >
-            <Checkbox>
-              I agree to the Terms of Services and Privacy Policy
+            <Checkbox onChange={onChange}>
+              I agree to the <Link>Terms of Services</Link> and{" "}
+              <Link>Privacy Policy</Link>
             </Checkbox>
           </Form.Item>
           <Form.Item className="submit">
@@ -151,13 +165,14 @@ const Register = () => {
               type="primary"
               htmlType="submit"
               className="login-form-button"
+              disabled={!checked}
             >
               {isLoading ? "Loading..." : "Continue"}
             </Button>
           </Form.Item>
         </Form>
         <Space direction="vertical">
-          <Text>
+          <Text style={{ color: "#bbb" }}>
             Have an account? <Link href="/login">Sign in</Link>
           </Text>
           {error && <p>{error}</p>}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../AuthContext";
-import { Link } from "react-router-dom";
+import { Button, Form, Input, Typography } from "antd";
+const { Title, Text, Link } = Typography;
 
 const ForgotPassword = () => {
   const { forgotPassword } = useAuth();
@@ -12,7 +13,6 @@ const ForgotPassword = () => {
   const handleSubmit = (e) => {
     setMessage("");
     setError("");
-    e.preventDefault();
     forgotPassword(email)
       .then(() => {
         setMessage("Check your email for a reset link");
@@ -24,22 +24,45 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div>
-      <h1>Forgot Password</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button type="submit">Reset Password</button>
-      </form>
-      {message && <div>{message}</div>}
-      {error && <div>{error}</div>}
-      <p>
-        <Link to="/login">Back to login</Link>
-      </p>
+    <div style={{ padding: "1em", textAlign: "center" }}>
+      <div
+        style={{
+          display: "inline-block",
+          maxWidth: "400px",
+          width: "100%",
+          fontWeight: 500,
+          textAlign: "left",
+        }}
+      >
+        <Title level={2}>Forgot Password</Title>
+        <Form onFinish={handleSubmit}>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                type: "email",
+              },
+            ]}
+          >
+            <Input
+              placeholder="Email"
+              value={email}
+              size="large"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" size="large">
+              Reset Password
+            </Button>
+          </Form.Item>
+        </Form>
+        {message && <Text>{message}</Text>}
+        {error && <Text>{error}</Text>}
+        <p>
+          <Link href="/login">Back to login</Link>
+        </p>
+      </div>
     </div>
   );
 };

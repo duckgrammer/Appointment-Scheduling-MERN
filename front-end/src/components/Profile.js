@@ -1,6 +1,6 @@
 import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../AuthContext";
+import { useAuth } from "../AuthContext";
 import { Button, Typography, Card } from "antd";
 import {
   DownloadOutlined,
@@ -123,7 +123,6 @@ const Profile = () => {
         groupedData[dateKey].push(item);
       });
 
-      console.log(groupedData);
       setAppointmentDayList(groupedData);
     };
 
@@ -144,6 +143,11 @@ const Profile = () => {
           marginTop: "1em",
         }}
       >
+        {isLoading ? (
+          <>
+            <LoadingOutlined /> <Text>Loading</Text>
+          </>
+        ) : null}
         {user ? (
           <div
             style={{
@@ -153,7 +157,10 @@ const Profile = () => {
               marginBottom: "1em",
             }}
           >
-            <Title level={5} style={{ marginBlock: "0px" }}>
+            <Title
+              level={5}
+              style={{ marginBlock: "0px", flexGrow: 1, textAlign: "center" }}
+            >
               {user.displayName}'s Appointments
             </Title>
             <DownloadOutlined
@@ -165,7 +172,7 @@ const Profile = () => {
         ) : null}
         {appointmentDayList ? (
           Object.keys(appointmentDayList).map((key, i) => (
-            <>
+            <div key={i}>
               <div
                 key={i}
                 style={{
@@ -199,7 +206,7 @@ const Profile = () => {
                   <Meta description={detail.specialization} />
                 </Card>
               ))}
-            </>
+            </div>
           ))
         ) : (
           <div
