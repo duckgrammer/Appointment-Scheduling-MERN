@@ -112,11 +112,22 @@ const Profile = () => {
 
       const groupedData = {};
       alist.forEach((item) => {
-        const dateKey = item.time.toLocaleDateString("en-GB", {
+        let dateKey = item.time.toLocaleDateString("en-GB", {
           day: "numeric",
           month: "long",
           year: "numeric",
         });
+
+        const today = new Date().toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+
+        if (dateKey === today) {
+          dateKey = "Today";
+        }
+
         if (!groupedData[dateKey]) {
           groupedData[dateKey] = [];
         }
