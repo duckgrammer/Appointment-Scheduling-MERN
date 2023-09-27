@@ -56,7 +56,7 @@ const Booking = () => {
       });
 
       let sortedArray = [...uniqueTime];
-      sortedArray.sort((a, b) => a - b);
+      sortedArray.sort((a, b) => new Date(a) - new Date(b));
       setTimeList(sortedArray);
     };
 
@@ -86,7 +86,10 @@ const Booking = () => {
       });
 
       let sortedArray = [...uniqueDay];
-      sortedArray.sort((a, b) => a - b);
+      sortedArray.sort((a, b) => a.split(" ")[0] - b.split(" ")[0]);
+      console.log(sortedArray[0]);
+      console.log(sortedArray[1]);
+
       setDayList(sortedArray);
     };
 
@@ -110,7 +113,7 @@ const Booking = () => {
       });
 
       let sortedArray = [...uniqueMonthYear];
-      sortedArray.sort((a, b) => a - b);
+      sortedArray.sort((a, b) => new Date(a) - new Date(b));
 
       let menus = [...sortedArray].map((time, key) => {
         return (
