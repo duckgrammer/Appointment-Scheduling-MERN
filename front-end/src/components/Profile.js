@@ -229,11 +229,28 @@ const Profile = () => {
             <LoadingOutlined /> <Text>Loading</Text>
           </div>
         )}
-        <div style={{ paddingInline: "2em" }}>
+      </div>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "600px",
+            width: "100%",
+            padding: "2em",
+          }}
+        >
           <Button
             onClick={() => history.push("/booking")}
             type="primary"
             size="large"
+            style={{ maxWidth: "500px" }}
             icon={
               <PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />
             }
