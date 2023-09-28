@@ -2,15 +2,15 @@
 
 Start the Node.JS Server:
 
-1. `cd back-end` to move into the folder where the API is
-2. `npm install`, to install all required dependencies
+1. `cd back-end` to move into the folder
+2. `npm i`, to install all required dependencies
 3. `npm start` to start the server
 
 Run the Front-end webapp:
 
-1. `cd front-end` to move into the folder where the API is
-2. `npm install`, to install all required dependencies
-3. `npm start` to move into the folder where the API is
+1. `cd front-end` to move into the folder
+2. `npm i`, to install all required dependencies
+3. `npm start` to start the server
 
 \*Make sure the Node.JS Server is running while using the react app
 
