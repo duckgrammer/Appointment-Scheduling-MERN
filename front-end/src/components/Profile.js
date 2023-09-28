@@ -1,7 +1,7 @@
 import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
-import { Button, Typography, Card, Dropdown, Popover } from "antd";
+import { Button, Typography, Card, Popover } from "antd";
 import {
   DownloadOutlined,
   LoadingOutlined,
@@ -104,8 +104,7 @@ const Profile = () => {
         );
         const result = await response.json();
 
-        console.log(result);
-        if (result.length !== 0) {
+        if (result.length !== 0 && new Date(result[0].time) >= new Date()) {
           const doctorInfo = await getDoctorById(
             result[0]._id,
             result[0].doctorId,

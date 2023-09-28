@@ -3,7 +3,6 @@ import {
   UserOutlined,
   ArrowLeftOutlined,
   LoadingOutlined,
-  EllipsisOutlined,
 } from "@ant-design/icons";
 import { useHistory, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -24,6 +23,7 @@ const Booking = () => {
   const [timeIndex, setTimeIndex] = useState(null);
   const [bookingId, setBookingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [availableTimes, setAvailableTimes] = useState(null);
   const [error, setError] = useState(null);
 
   // Sorted Lists
@@ -49,7 +49,7 @@ const Booking = () => {
   useEffect(() => {
     const availableTime = () => {
       let uniqueTime = new Set();
-      selectDoctor.availableTimes.forEach((time) => {
+      availableTimes.forEach((time) => {
         let date = new Date(time);
         if (
           date.getMonth() === selectMonth &&
@@ -70,12 +70,12 @@ const Booking = () => {
     } else {
       setTimeList(null);
     }
-  }, [selectDay, selectMonth, selectYear, selectDoctor]);
+  }, [selectDay, selectMonth, selectYear, selectDoctor, availableTimes]);
 
   useEffect(() => {
     const availableDay = () => {
       let uniqueDay = new Set();
-      selectDoctor.availableTimes.forEach((time) => {
+      availableTimes.forEach((time) => {
         let date = new Date(time);
         if (
           date.getMonth() === selectMonth &&
@@ -92,8 +92,6 @@ const Booking = () => {
 
       let sortedArray = [...uniqueDay];
       sortedArray.sort((a, b) => a.split(" ")[0] - b.split(" ")[0]);
-      console.log(sortedArray[0]);
-      console.log(sortedArray[1]);
 
       setDayList(sortedArray);
     };
@@ -103,12 +101,12 @@ const Booking = () => {
     } else {
       setDayList(null);
     }
-  }, [selectMonth, selectYear, selectDoctor]);
+  }, [selectMonth, selectYear, selectDoctor, availableTimes]);
 
   useEffect(() => {
     const availableMonthYear = () => {
       let uniqueMonthYear = new Set();
-      selectDoctor.availableTimes.forEach((time) => {
+      availableTimes.forEach((time) => {
         uniqueMonthYear.add(
           new Date(time).toLocaleDateString("en-us", {
             year: "numeric",
@@ -136,7 +134,7 @@ const Booking = () => {
     } else {
       setMonthYearList(null);
     }
-  }, [selectDoctor]);
+  }, [availableTimes, selectDoctor]);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -199,6 +197,11 @@ const Booking = () => {
     setDayIndex(null);
     setTimeIndex(null);
 
+    const filteredDates = doctors[e].availableTimes.filter((date) => {
+      const today = new Date();
+      return new Date(date) >= today;
+    });
+    setAvailableTimes(filteredDates);
     setSelectDoctor(doctors[e]);
   };
 
