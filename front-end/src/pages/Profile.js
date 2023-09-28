@@ -300,6 +300,7 @@ const Profile = () => {
             <LoadingOutlined /> <Text>Loading</Text>
           </div>
         )}
+        <div style={{ height: "6em" }} />
       </div>
       <BottomButton bookedTimes={bookedTimes} history={history} />
     </div>
