@@ -398,6 +398,7 @@ const Booking = () => {
                 {[...dayList].map((day, i) => {
                   return (
                     <SelectWeek
+                      key={i}
                       i={i}
                       day={day}
                       dayIndex={dayIndex}
@@ -422,6 +423,7 @@ const Booking = () => {
                 {[...timeList].map((day, i) => {
                   return (
                     <TimeChoice
+                      key={i}
                       i={i}
                       day={day}
                       timeIndex={timeIndex}
