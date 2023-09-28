@@ -12,11 +12,10 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const onFinish = async (value) => {
-    //value.preventDefault();
     setIsLoading(true);
     try {
       await login(value.email, value.password);
-      history.push("/"); // Redirect to home page
+      history.push("/");
     } catch (error) {
       setError(error.message);
     }

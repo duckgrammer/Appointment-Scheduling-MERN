@@ -1,25 +1,23 @@
 import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
-import { Button, Typography, Card, Popover } from "antd";
-import {
-  DownloadOutlined,
-  LoadingOutlined,
-  PlusOutlined,
-  EllipsisOutlined,
-} from "@ant-design/icons";
-const { Text, Title } = Typography;
-const { Meta } = Card;
+import { Typography } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+// custom components
+import DateDivider from "../components/DateDivider";
+import ProfileNav from "../components/ProfileNav";
+import BottomButton from "../components/BottomButton";
 
 const Profile = () => {
-  const { logout, getUser } = useAuth();
-  const history = useHistory();
-
   const [user, setUser] = useState(null);
   const [bookedTimes, setBookedTimes] = useState(null);
   const [bookingList, setBookingList] = useState(null);
   const [appointmentDayList, setAppointmentDayList] = useState(null);
-  let [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { logout, getUser } = useAuth();
+  const history = useHistory();
+  const { Text } = Typography;
 
   useEffect(() => {
     let currentUser = getUser();
@@ -233,84 +231,15 @@ const Profile = () => {
             <LoadingOutlined /> <Text>Loading</Text>
           </>
         ) : null}
-        {user ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "1em",
-              marginBottom: "1em",
-            }}
-          >
-            <Title
-              level={5}
-              style={{ marginBlock: "0px", flexGrow: 1, textAlign: "center" }}
-            >
-              {user.displayName}'s Appointments
-            </Title>
-            <DownloadOutlined
-              rotate={270}
-              style={{ fontSize: "20px", color: "#ff5065" }}
-              onClick={handleLogout}
-            />
-          </div>
-        ) : null}
+        {user ? <ProfileNav user={user} handleLogout={handleLogout} /> : null}
         {appointmentDayList ? (
           Object.keys(appointmentDayList).map((key, i) => (
-            <div key={i}>
-              <div
-                key={i}
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  backgroundColor: "#f0f0f0",
-                  marginBottom: "1em",
-                  padding: "0.25em",
-                }}
-              >
-                <Text>{key}</Text>
-              </div>
-              {appointmentDayList[key].map((detail, j) => (
-                <Card
-                  key={j}
-                  title={
-                    <>
-                      {detail.name}
-                      <Popover
-                        placement="top"
-                        content={
-                          <div
-                            style={{ cursor: "pointer", color: "#ff5065" }}
-                            onClick={() => deleteAppointment(detail)}
-                          >
-                            delete
-                          </div>
-                        }
-                      >
-                        <EllipsisOutlined
-                          style={{ marginInline: "0.5em", cursor: "pointer" }}
-                        />
-                      </Popover>
-                    </>
-                  }
-                  extra={new Date(detail.time).toLocaleTimeString("en-us", {
-                    hour: "numeric",
-                    minute: "numeric",
-                    hour12: true,
-                  })}
-                  style={{
-                    marginBottom: "1em",
-                    display: "flex",
-                    flexDirection: "column",
-                    backgroundColor: "#f0f0f0",
-                    marginInline: "1em",
-                  }}
-                  description="This is the description"
-                >
-                  <Meta description={detail.specialization} />
-                </Card>
-              ))}
-            </div>
+            <DateDivider
+              key={key}
+              i={i}
+              appointmentDayList={appointmentDayList}
+              deleteAppointment={deleteAppointment}
+            />
           ))
         ) : (
           <div
@@ -323,38 +252,7 @@ const Profile = () => {
           </div>
         )}
       </div>
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "600px",
-            width: "100%",
-            padding: "2em",
-          }}
-        >
-          <Button
-            onClick={() =>
-              history.push("/booking", { bookedTimes: bookedTimes })
-            }
-            type="primary"
-            size="large"
-            style={{ maxWidth: "500px" }}
-            icon={
-              <PlusOutlined style={{ strokeWidth: "80", stroke: "white" }} />
-            }
-            block
-          >
-            Booking Appointment
-          </Button>
-        </div>
-      </div>
+      <BottomButton bookedTimes={bookedTimes} history={history} />
     </div>
   );
 };

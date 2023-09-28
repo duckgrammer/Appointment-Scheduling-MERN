@@ -7,17 +7,15 @@ import {
 import { useHistory, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
-const { Text, Title } = Typography;
-const { Option } = Select;
+
+// components
+import SelectMonth from "../components/SelectMonth";
+import SelectWeek from "../components/SelectWeek";
+import TimeChoice from "../components/TimeChoice";
 
 const Booking = () => {
-  const { getUser } = useAuth();
   const [user, setUser] = useState(null);
-  const history = useHistory();
-  const location = useLocation();
-  const bookedTimes = location.state?.bookedTimes || "No message received";
   const [messageApi, contextHolder] = message.useMessage();
-
   const [doctors, setDoctors] = useState(null);
   const [dayIndex, setDayIndex] = useState(null);
   const [timeIndex, setTimeIndex] = useState(null);
@@ -38,6 +36,13 @@ const Booking = () => {
   const [selectYear, setSelectYear] = useState(null);
   const [selectDay, setSelectDay] = useState(null);
   const [selectTime, setSelectTime] = useState(null);
+
+  const { getUser } = useAuth();
+  const history = useHistory();
+  const location = useLocation();
+  const { Title } = Typography;
+  const { Option } = Select;
+  const bookedTimes = location.state?.bookedTimes || "No message received";
 
   useEffect(() => {
     let currentUser = getUser();
@@ -372,28 +377,12 @@ const Booking = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Select
-              style={{ width: 200 }}
-              disabled={monthYearList === null || monthYearList.length === 0}
-              placeholder="choose month"
-              onChange={chooseMonth}
-              size="large"
-              value={
-                monthYearList === null || monthYearList.length === 0
-                  ? "no availability"
-                  : selectYear === null || selectMonth === null
-                  ? null
-                  : new Date(selectYear, selectMonth).toLocaleDateString(
-                      "en-us",
-                      {
-                        year: "numeric",
-                        month: "long",
-                      }
-                    )
-              }
-            >
-              {monthYearList}
-            </Select>
+            <SelectMonth
+              monthYearList={monthYearList}
+              chooseMonth={chooseMonth}
+              selectMonth={selectMonth}
+              selectYear={selectYear}
+            />
           </Form.Item>
 
           {dayList === null ? null : (
@@ -408,42 +397,12 @@ const Booking = () => {
               >
                 {[...dayList].map((day, i) => {
                   return (
-                    <div
-                      style={{
-                        display: "inline-block",
-                        width: "52px",
-                        height: "52px",
-                        margin: "2px",
-                      }}
-                      key={i}
-                    >
-                      <div
-                        key={i}
-                        onClick={() => chooseDay(day, i)}
-                        style={
-                          i === dayIndex
-                            ? {
-                                border: "2px solid #ff0000",
-                                backgroundColor: "#f0f0f0",
-                                textAlign: "center",
-                                borderRadius: "8px",
-                                display: "flex",
-                                flexDirection: "column",
-                              }
-                            : {
-                                backgroundColor: "#f0f0f0",
-                                border: "2px solid #f0f0f0",
-                                textAlign: "center",
-                                borderRadius: "8px",
-                                display: "flex",
-                                flexDirection: "column",
-                              }
-                        }
-                      >
-                        <Text>{day.split(" ")[1]}</Text>
-                        <Text>{day.split(" ")[0]}</Text>
-                      </div>
-                    </div>
+                    <SelectWeek
+                      i={i}
+                      day={day}
+                      dayIndex={dayIndex}
+                      chooseDay={chooseDay}
+                    />
                   );
                 })}
               </div>
@@ -462,24 +421,12 @@ const Booking = () => {
               >
                 {[...timeList].map((day, i) => {
                   return (
-                    <Button
-                      size="large"
-                      key={i}
-                      onClick={() => chooseTime(day, i)}
-                      style={
-                        i === timeIndex
-                          ? {
-                              border: "2px solid #ff0000",
-                            }
-                          : {}
-                      }
-                    >
-                      {day.toLocaleTimeString("en-us", {
-                        hour: "numeric",
-                        minute: "numeric",
-                        hour12: true,
-                      })}
-                    </Button>
+                    <TimeChoice
+                      i={i}
+                      day={day}
+                      timeIndex={timeIndex}
+                      chooseTime={chooseTime}
+                    />
                   );
                 })}
               </div>
