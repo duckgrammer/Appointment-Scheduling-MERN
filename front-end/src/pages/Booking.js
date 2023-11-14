@@ -204,7 +204,7 @@ const Booking = () => {
 
     const filteredDates = doctors[e].availableTimes.filter((date) => {
       const today = new Date();
-      return new Date(date) >= today;
+      return new Date(date); // >= today;
     });
     setAvailableTimes(filteredDates);
     setSelectDoctor(doctors[e]);
