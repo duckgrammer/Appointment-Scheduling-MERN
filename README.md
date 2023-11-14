@@ -1,3 +1,6 @@
+## App Screenshots
+
+Full implementation of an appointment booking app using MERN stack.
 ![alt text](https://github.com/panda3141592/Appointment-Scheduling-MERN/blob/main/ui.png?raw=true)
 
 ## How to run the program
@@ -6,7 +9,18 @@ Start the Node.JS Server:
 
 1. `cd back-end` to move into the folder
 2. `npm i`, to install all required dependencies
-3. `npm start` to start the server
+3. Creata a `.env` file with the follwing info from firebase
+
+```
+REACT_APP_FIREBASE_API_KEY = ""
+REACT_APP_FIREBASE_AUTH_DOMAIN = ""
+REACT_APP_FIREBASE_PROJECT_ID = ""
+REACT_APP_FIREBASE_STORAGE_BUCKET = ""
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID = ""
+REACT_APP_FIREBASE_APP_ID = ""
+```
+
+4. `npm start` to start the server
 
 Run the Front-end webapp:
 
