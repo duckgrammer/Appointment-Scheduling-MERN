@@ -1,3 +1,5 @@
+![alt text](https://github.com/panda3141592/Appointment-Scheduling-MERN/blob/main/ui.png?raw=true)
+
 ## How to run the program
 
 Start the Node.JS Server:
